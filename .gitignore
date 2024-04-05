@@ -1,0 +1,4 @@
+# Ignore the .vscode directory
+.vscode/
+server/node_modules/
+client/node_modules/
