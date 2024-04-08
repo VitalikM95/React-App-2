@@ -1,0 +1,32 @@
+version: '3'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - '4444:4444'
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=0
+      - DB_NAME=task-manager
+    depends_on:
+      - db
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    ports:
+      - '3000:3000'
+    stdin_open: true
+    tty: true
+  db:
+    image: postgres:latest
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0000
+      POSTGRES_DB: task-manager

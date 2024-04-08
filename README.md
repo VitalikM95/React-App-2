@@ -8,7 +8,7 @@ To get a local copy up and running follow these simple steps:
 
 ### Prerequisites
 
-Make sure you have Node.js and npm installed on your local machine.
+Make sure you have Docker and Docker Compose installed on your local machine.
 
 ### Installation
 
@@ -16,37 +16,19 @@ Make sure you have Node.js and npm installed on your local machine.
    ```sh
    git clone https://github.com/VitalikM95/React-App.git
    ```
-2. Install dependencies for both server and client:
+2. Navigate to the project directory:
    ```sh
-   cd client
-   npm install
-   cd ../server
-   npm install
+   cd React-App
    ```
 
 ### Usage
 
-#### Development Mode
+#### Development Mode with Docker
 
-To start the project in development mode with server and client running simultaneously:
-
-```sh
-npm run start:dev
-```
-
-This will launch the server in development mode with watch mode enabled and start the client.
-
-#### Production Mode
-
-To build the project for production and start the server:
+To start the project in development mode with server, client, and database running simultaneously:
 
 ```sh
-npm run build
-npm run start:prod
+docker-compose up --build
 ```
 
-This will build both server and client and then start the server in production mode.
-
-## Contact
-
-Project Link: [Project deployed on Vercel]('')
+This command will build and start the Docker containers for the server, client, and PostgreSQL database. The server will be accessible at `http://localhost:4444` and the client at `http://localhost:3000`.

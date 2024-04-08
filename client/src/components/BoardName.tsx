@@ -111,7 +111,7 @@ const BoardName = () => {
                     <div className='flex items-center h-fit'>
                       <button
                         type='submit'
-                        className='border h-8 lg:h-10 sm:w-auto w-20 px-7 text-white text-sm rounded-md px-0.5 sm:px-1.5 lg:px-3 mr-1 button-effects-dark bg-main'
+                        className='border h-8 lg:h-10 sm:w-auto w-20 px-7 text-white text-sm rounded-md sm:px-1.5 lg:px-3 mr-1 button-effects-dark bg-main'
                       >
                         <span className='sm:hidden block'>
                           <DoneSvg />
@@ -123,7 +123,7 @@ const BoardName = () => {
                           setIsBoardEditing(false)
                           reset()
                         }}
-                        className='border h-8 lg:h-10 sm:w-auto w-20 px-7 text-white text-sm rounded-md px-0.5 sm:px-1.5 lg:px-3 mr-1 button-effects-dark bg-red-500'
+                        className='border h-8 lg:h-10 sm:w-auto w-20 px-7 text-white text-sm rounded-md sm:px-1.5 lg:px-3 mr-1 button-effects-dark bg-red-500'
                       >
                         <span className='sm:hidden block'>
                           <CloseSvg />
