@@ -14,7 +14,7 @@ Make sure you have Docker and Docker Compose installed on your local machine.
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/VitalikM95/React-App.git
+   git clone https://github.com/VitalikM95/React-App-2.git
    ```
 2. Navigate to the project directory:
    ```sh
