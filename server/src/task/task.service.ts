@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
-import { FindOneOptions, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { InjectRepository } from '@nestjs/typeorm'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
@@ -19,21 +19,14 @@ export class TaskService {
     private listRepo: Repository<List>,
   ) {}
 
-  findAll() {
-    return this.taskRepo.find({
-      relations: ['list'],
-    })
-  }
-
-  async findOne(id: number) {
-    if (id === 0) {
+  async findOne(taskId: number) {
+    if (taskId === 0) {
       return null
     }
-    const options: FindOneOptions<Task> = {
-      where: { id },
+    const foundTask = await this.taskRepo.findOne({
+      where: { id: taskId },
       relations: ['list'],
-    }
-    const foundTask = await this.taskRepo.findOne(options)
+    })
     if (!foundTask) {
       throw new NotFoundException(`Task not found`)
     }
@@ -45,46 +38,35 @@ export class TaskService {
       throw new BadRequestException('Name field cannot be empty')
     }
     const list = await this.listRepo.findOne({
-      where: { name: payload.status },
+      where: { name: payload.status, board: { id: payload.boardId } },
     })
     if (!list) {
-      const newList = this.listRepo.create({ name: payload.status })
-      await this.listRepo.save(newList)
-      const newData = { ...payload, list: newList }
-      const newTask = this.taskRepo.create(newData)
-      return this.taskRepo.save(newTask)
-    } else {
-      const newTask = this.taskRepo.create({ ...payload, list })
-      return this.taskRepo.save(newTask)
+      throw new NotFoundException('This list was not found')
     }
+    const newTask = this.taskRepo.create({ ...payload, list })
+    return this.taskRepo.save(newTask)
   }
 
-  async update(id: number, changes: UpdateTaskDto) {
+  async update(taskId: number, changes: UpdateTaskDto) {
     const list = await this.listRepo.findOne({
-      where: { name: changes.status },
+      where: { name: changes.status, board: { id: changes.boardId } },
     })
     if (!list) {
-      const newList = this.listRepo.create({ name: changes.status })
-      await this.listRepo.save(newList)
-      const newData = { ...changes, list: newList }
-      await this.taskRepo.update(id, newData)
-    } else {
-      const newData = { ...changes, list: list }
-      await this.taskRepo.update(id, newData)
+      throw new NotFoundException('This list was not found')
     }
-    const options: FindOneOptions<Task> = {
-      where: { id },
+    await this.taskRepo.update(taskId, { ...changes, list: list })
+    return this.taskRepo.findOne({
+      where: { id: taskId },
       relations: ['list'],
-    }
-    return this.taskRepo.findOne(options)
+    })
   }
 
-  async remove(id: number) {
-    const foundTask = await this.taskRepo.findOne({ where: { id } })
+  async remove(taskId: number) {
+    const foundTask = await this.taskRepo.findOne({ where: { id: taskId } })
     if (!foundTask) {
       throw new NotFoundException(`Task not found`)
     }
-    await this.taskRepo.delete(id)
+    await this.taskRepo.delete(taskId)
     return foundTask
   }
 }

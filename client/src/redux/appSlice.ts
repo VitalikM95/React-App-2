@@ -13,6 +13,7 @@ const initialState: IAppState = {
   isModalActive: false,
   TaskState: 'show',
   taskId: 0,
+  boardId: 0,
   listName: '',
 }
 
@@ -36,6 +37,10 @@ export const appSlice = createSlice({
         state.TaskState = action.payload.TaskState
       }
     ),
+    setBoardId: create.reducer((state, action: PayloadAction<number>) => {
+      localStorage.setItem('boardId', action.payload.toString())
+      state.boardId = action.payload
+    }),
   }),
 })
 

@@ -1,7 +1,9 @@
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { DoneSvg } from '../assets/svg-data'
 import { useAppActions, useAppSelector } from '../redux/hooks'
 import { mainApi } from '../redux/main.api'
+
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import { getIdFromLocalStorage } from '../utils/localStorageFuncs'
+import { DoneSvg } from '../assets/svg-data'
 
 interface ICreateForm {
   name: string
@@ -12,14 +14,17 @@ interface ICreateForm {
 }
 
 const EditTask = () => {
-  const { data: lists } = mainApi.useGetListsQuery()
+  const { TaskState, listName, boardId, taskId } = useAppSelector(
+    state => state.app
+  )
   const { toggleModal, changeTaskState } = useAppActions()
-  const taskId = useAppSelector(state => state.app.taskId)
-  const taskState = useAppSelector(state => state.app.TaskState)
-  const listName = useAppSelector(state => state.app.listName)
+
+  const { data: task, isLoading } = mainApi.useGetTaskQuery(taskId || 0)
   const [editTask] = mainApi.useUpdateTaskMutation()
   const [createTask] = mainApi.useCreateTaskMutation()
-  const { data: task, isLoading } = mainApi.useGetTaskQuery(taskId || 0)
+  const { data: lists } = mainApi.useGetListsByBoardQuery(
+    boardId !== 0 ? boardId : getIdFromLocalStorage('boardId', 0)
+  )
 
   const {
     handleSubmit,
@@ -28,7 +33,7 @@ const EditTask = () => {
   } = useForm<ICreateForm>()
 
   const onSubmit: SubmitHandler<ICreateForm> = data => {
-    if (taskState === 'edit' && taskId) {
+    if (TaskState === 'edit' && taskId) {
       editTask({ ...data, id: taskId })
     } else {
       createTask(data)
@@ -88,7 +93,7 @@ const EditTask = () => {
                   {...field}
                 >
                   {lists?.map(list => (
-                    <option key={list.id} value={list.name}>
+                    <option className='' key={list.id} value={list.name}>
                       {list.name}
                     </option>
                   ))}

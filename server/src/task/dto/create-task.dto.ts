@@ -12,4 +12,6 @@ export class CreateTaskDto {
   readonly status: string
   @IsDate()
   readonly dueDate: Date
+  @IsNotEmpty()
+  readonly boardId: number
 }

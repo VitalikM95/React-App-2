@@ -19,7 +19,7 @@ let ActionLogMiddleware = class ActionLogMiddleware {
     async use(req, res, next) {
         const { method, url, body } = req;
         const action = this.getActionFromRequest(method, url);
-        if (method === 'GET') {
+        if (method === 'GET' || url.includes('/boards')) {
             return next();
         }
         try {

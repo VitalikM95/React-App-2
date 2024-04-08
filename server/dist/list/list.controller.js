@@ -21,36 +21,27 @@ let ListController = class ListController {
     constructor(listService) {
         this.listService = listService;
     }
-    findAll() {
-        return this.listService.findAll();
-    }
-    findOne(id) {
-        return this.listService.findOne(+id);
+    getListsByBoard(boardId) {
+        return this.listService.getListsByBoard(+boardId);
     }
     create(payload) {
         return this.listService.create(payload);
     }
-    update(id, payload) {
-        return this.listService.update(+id, payload);
+    update(listId, payload) {
+        return this.listService.update(+listId, payload);
     }
-    remove(id) {
-        return this.listService.remove(+id);
+    remove(listId) {
+        return this.listService.remove(+listId);
     }
 };
 exports.ListController = ListController;
 __decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], ListController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)(':boardId'),
+    __param(0, (0, common_1.Param)('boardId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
-], ListController.prototype, "findOne", null);
+], ListController.prototype, "getListsByBoard", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -59,16 +50,16 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ListController.prototype, "create", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Patch)(':listId'),
+    __param(0, (0, common_1.Param)('listId')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, update_list_dto_1.UpdateListDto]),
     __metadata("design:returntype", void 0)
 ], ListController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Delete)(':listId'),
+    __param(0, (0, common_1.Param)('listId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)

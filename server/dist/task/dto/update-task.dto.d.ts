@@ -4,4 +4,5 @@ export declare class UpdateTaskDto {
     readonly priority?: string;
     readonly status?: string;
     readonly dueDate?: Date;
+    readonly boardId: number;
 }

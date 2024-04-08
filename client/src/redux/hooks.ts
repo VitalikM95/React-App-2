@@ -1,6 +1,7 @@
-import type { RootState, AppDispatch } from './store'
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux'
 import { bindActionCreators } from '@reduxjs/toolkit'
+
+import type { RootState, AppDispatch } from './store'
 import { appActions } from './appSlice'
 
 const actions = {

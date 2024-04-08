@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ActionLogModule } from './actionLog/actionLog.module'
 import { ActionLogMiddleware } from './middleware/actionLog.middleware'
+import { BoardModule } from './board/board.module'
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ActionLogMiddleware } from './middleware/actionLog.middleware'
     TaskModule,
     ListModule,
     ActionLogModule,
+    BoardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

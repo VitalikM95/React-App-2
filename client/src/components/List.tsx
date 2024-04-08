@@ -1,6 +1,14 @@
 import { FC, useEffect, useState } from 'react'
 import { useAppActions } from '../redux/hooks'
+import { mainApi } from '../redux/main.api'
+
+import Card from './Card'
+
+import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { Menu } from '@headlessui/react'
+import { toast } from 'react-toastify'
+
+import { ICustomError, IList } from '../types/models'
 import {
   DeleteSvg,
   DotsSvg,
@@ -8,24 +16,27 @@ import {
   EditSvg,
   LoadingSvg,
 } from '../assets/svg-data'
-import Card from './Card'
-import { ICustomError, IList } from '../types/models'
-import { mainApi } from '../redux/main.api'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { toast } from 'react-toastify'
 
 type ListProps = {
   list: IList
 }
 
 const List: FC<ListProps> = ({ list }) => {
-  const [isListRenaming, setIsListRenaming] = useState(false)
   const { toggleModal, changeTaskState } = useAppActions()
   const [deleteList] = mainApi.useDeleteListMutation()
   const [updateList, { isLoading, error }] = mainApi.useUpdateListMutation<{
     isLoading: boolean
     error: ICustomError
   }>()
+
+  const [isListRenaming, setIsListRenaming] = useState(false)
+
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<{ name: string }>()
 
   useEffect(() => {
     if (error) {
@@ -36,31 +47,15 @@ const List: FC<ListProps> = ({ list }) => {
       })
       reset()
     }
-  }, [error])
-
-  const handleCancelButton = () => {
-    setIsListRenaming(false)
-    reset()
-  }
+  }, [error, reset])
 
   const handleCreateTask = () => {
     toggleModal({ listName: list.name })
     changeTaskState({ TaskState: 'create' })
   }
 
-  const handleDeleteList = () => {
-    deleteList(list.id)
-  }
-
-  const {
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors },
-  } = useForm<{ name: string }>()
-
   const onSubmit: SubmitHandler<{ name: string }> = data => {
-    updateList({ id: list.id, name: data.name })
+    updateList({ id: list.id, boardId: 0, name: data.name })
     setIsListRenaming(false)
   }
 
@@ -101,7 +96,10 @@ const List: FC<ListProps> = ({ list }) => {
             Done!
           </button>
           <button
-            onClick={handleCancelButton}
+            onClick={() => {
+              setIsListRenaming(false)
+              reset()
+            }}
             className='border text-white w-full text-sm rounded-md p-2 mb-2 button-effects-dark bg-red-500'
           >
             Cancel
@@ -128,7 +126,7 @@ const List: FC<ListProps> = ({ list }) => {
                     <DotsSvg />
                   </Menu.Button>
                 </div>
-                <Menu.Items className='absolute z-20 mt-1 w-48 p-3 rounded-md bg-white shadow-lg border-2'>
+                <Menu.Items className='absolute z-20 mt-1 right-0 w-48 p-3 rounded-md bg-white shadow-lg border-2'>
                   <div className='flex flex-col'>
                     <Menu.Item>
                       <div
@@ -150,7 +148,9 @@ const List: FC<ListProps> = ({ list }) => {
                     </Menu.Item>
                     <Menu.Item>
                       <div
-                        onClick={handleDeleteList}
+                        onClick={() => {
+                          deleteList(list.id)
+                        }}
                         className='button-effects-light py-1 text-red-500 rounded-md cursor-pointer flex items-center'
                       >
                         <DeleteSvg />

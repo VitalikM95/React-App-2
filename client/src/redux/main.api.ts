@@ -1,11 +1,16 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IActionLog, ICreateTask, IList, ITask } from '../types/models'
+import { IActionLog, IBoard, ICreateTask, IList, ITask } from '../types/models'
 
-type UpdateListData = {
+type BoardData = {
   id: number
   name: string
 }
-type UpdateTaskData = {
+type ListData = {
+  id?: number
+  boardId: number
+  name: string
+}
+type TaskData = {
   id: number
   name?: string
   description?: string
@@ -15,47 +20,85 @@ type UpdateTaskData = {
 }
 
 export const mainApi = createApi({
-  reducerPath: 'list/api',
+  reducerPath: 'main/api',
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:4444/api',
   }),
-  tagTypes: ['List', 'Task', 'History'],
+  tagTypes: ['List', 'Task', 'History', 'Board'],
   endpoints: build => ({
-    getLists: build.query<IList[], void>({
+    getAllBoards: build.query<IBoard[], void>({
       query: () => ({
-        url: '/lists',
+        url: '/boards',
       }),
-      providesTags: () => ['List'],
+      providesTags: () => ['Board'],
     }),
-    createList: build.mutation<IList, string>({
+    getBoard: build.query<IBoard, number>({
+      query: boardId => ({
+        url: `/boards/${boardId}`,
+      }),
+      providesTags: () => ['Board'],
+    }),
+    createBoard: build.mutation<IBoard, string>({
       query: name => ({
-        url: '/lists',
+        url: '/boards',
         method: 'POST',
         body: { name },
       }),
-      invalidatesTags: ['List', 'History'],
+      invalidatesTags: ['Board'],
     }),
-    updateList: build.mutation<IList, UpdateListData>({
+    updateBoard: build.mutation<IBoard, BoardData>({
+      query: boardData => ({
+        url: `/boards/${boardData.id}`,
+        method: 'PATCH',
+        body: { name: boardData.name },
+      }),
+      invalidatesTags: ['Board'],
+    }),
+    deleteBoard: build.mutation<IBoard, number>({
+      query: boardId => ({
+        url: `/boards/${boardId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Board'],
+    }),
+
+    // LISTS
+
+    getListsByBoard: build.query<IList[], number>({
+      query: boardId => ({
+        url: `/lists/${boardId}`,
+      }),
+      providesTags: () => ['List'],
+    }),
+    createList: build.mutation<IList, ListData>({
+      query: ({ name, boardId }) => ({
+        url: '/lists',
+        method: 'POST',
+        body: { name, boardId },
+      }),
+      invalidatesTags: ['List', 'Board', 'History'],
+    }),
+    updateList: build.mutation<IList, ListData>({
       query: listData => ({
         url: `/lists/${listData.id}`,
         method: 'PATCH',
-        body: { name: listData.name },
+        body: { name: listData.name, boardId: listData.boardId },
       }),
-      invalidatesTags: ['List', 'History', 'Task'],
+      invalidatesTags: ['List', 'Board', 'Task', 'History'],
     }),
-    deleteList: build.mutation<object, number>({
-      query: id => ({
-        url: `/lists/${id}`,
+    deleteList: build.mutation<IList, number>({
+      query: listId => ({
+        url: `/lists/${listId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['List', 'History'],
+      invalidatesTags: ['List', 'Board', 'History'],
     }),
 
     // TASKS
 
     getTask: build.query<ITask, number>({
-      query: id => ({
-        url: `/tasks/${id}`,
+      query: taskId => ({
+        url: `/tasks/${taskId}`,
       }),
       providesTags: () => ['Task'],
     }),
@@ -65,22 +108,22 @@ export const mainApi = createApi({
         method: 'POST',
         body: taskData,
       }),
-      invalidatesTags: ['List', 'History'],
+      invalidatesTags: ['Board', 'History'],
     }),
-    updateTask: build.mutation<ITask, UpdateTaskData>({
+    updateTask: build.mutation<ITask, TaskData>({
       query: taskData => ({
         url: `/tasks/${taskData.id}`,
         method: 'PATCH',
         body: taskData,
       }),
-      invalidatesTags: ['List', 'Task', 'History'],
+      invalidatesTags: ['Board', 'Task', 'History'],
     }),
-    deleteTask: build.mutation<object, number>({
-      query: id => ({
-        url: `/tasks/${id}`,
+    deleteTask: build.mutation<ITask, number>({
+      query: taskId => ({
+        url: `/tasks/${taskId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['List', 'History'],
+      invalidatesTags: ['Board', 'History'],
     }),
 
     // HISTORY

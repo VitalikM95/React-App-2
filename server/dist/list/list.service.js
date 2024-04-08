@@ -18,71 +18,80 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const list_entity_1 = require("./entities/list.entity");
 const task_entity_1 = require("../task/entities/task.entity");
+const board_entity_1 = require("../board/entities/board.entity");
 let ListService = class ListService {
-    constructor(taskRepo, listRepo) {
+    constructor(taskRepo, listRepo, boardRepo) {
         this.taskRepo = taskRepo;
         this.listRepo = listRepo;
+        this.boardRepo = boardRepo;
     }
-    findAll() {
-        return this.listRepo.find({
+    async getListsByBoard(boardId) {
+        if (boardId === 0) {
+            return [];
+        }
+        const board = await this.boardRepo.findOne({
+            where: { id: boardId },
+        });
+        if (!board) {
+            throw new common_1.NotFoundException('Board not found');
+        }
+        const lists = await this.listRepo.find({
+            where: { board: { id: boardId } },
             relations: ['tasks'],
         });
-    }
-    async findOne(id) {
-        const options = {
-            where: { id },
-            relations: ['tasks'],
-        };
-        const foundList = await this.listRepo.findOne(options);
-        if (!foundList) {
-            throw new common_1.NotFoundException(`List not found`);
-        }
-        return foundList;
+        return lists;
     }
     async create(payload) {
         if (!payload.name) {
             throw new common_1.BadRequestException('Name field cannot be empty');
         }
+        const { boardId, name } = payload;
+        const board = await this.boardRepo.findOne({
+            where: { id: boardId },
+        });
+        if (!board) {
+            throw new common_1.NotFoundException('Board not found');
+        }
         const isExist = await this.listRepo.findOne({
-            where: { name: payload.name },
+            where: { name, board: { id: boardId } },
         });
         if (isExist) {
             throw new common_1.ConflictException('A List with this name already exists');
         }
-        const newList = this.listRepo.create(payload);
+        const newList = this.listRepo.create({ name, board });
         return this.listRepo.save(newList);
     }
-    async update(id, changes) {
+    async update(listId, changes) {
         if (!changes.name) {
             throw new common_1.BadRequestException('Name field cannot be empty');
         }
+        const { boardId, ...otherChanges } = changes;
         const isExist = await this.listRepo.findOne({
-            where: { name: changes.name },
+            where: { name: otherChanges.name, board: { id: boardId } },
         });
         if (isExist) {
             throw new common_1.ConflictException('A List with this name already exists');
         }
-        const options = {
-            where: { id },
+        const list = await this.listRepo.findOne({
+            where: { id: listId },
             relations: ['tasks'],
-        };
-        const list = await this.listRepo.findOne(options);
+        });
         if (!list) {
             throw new common_1.BadRequestException('List not found');
         }
-        await this.listRepo.update(id, { name: changes.name });
+        await this.listRepo.update(listId, { name: otherChanges.name });
         for (const task of list.tasks) {
-            task.status = changes.name;
+            task.status = otherChanges.name;
             await this.taskRepo.save(task);
         }
-        return this.listRepo.findOne({ where: { id } });
+        return this.listRepo.findOne({ where: { id: listId } });
     }
-    async remove(id) {
-        const foundList = await this.listRepo.findOne({ where: { id } });
+    async remove(listId) {
+        const foundList = await this.listRepo.findOne({ where: { id: listId } });
         if (!foundList) {
             throw new common_1.NotFoundException(`List not found`);
         }
-        await this.listRepo.delete(id);
+        await this.listRepo.delete(listId);
         return foundList;
     }
 };
@@ -91,7 +100,9 @@ exports.ListService = ListService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(task_entity_1.Task)),
     __param(1, (0, typeorm_1.InjectRepository)(list_entity_1.List)),
+    __param(2, (0, typeorm_1.InjectRepository)(board_entity_1.Board)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], ListService);
 //# sourceMappingURL=list.service.js.map

@@ -1,22 +1,35 @@
 import { FC, Fragment, useState } from 'react'
-import { Listbox, Menu } from '@headlessui/react'
-import { CalendarSvg, DeleteSvg, DotsSvg, EditSvg } from '../assets/svg-data'
-import { useAppActions } from '../redux/hooks'
-import { ArrowDownSvg } from './../assets/svg-data'
-import { ITask } from '../types/models'
 import { mainApi } from '../redux/main.api'
+import { useAppActions, useAppSelector } from '../redux/hooks'
+
+import { Listbox, Menu } from '@headlessui/react'
 import { formatDate } from '../utils/dateHook'
+import { getIdFromLocalStorage } from '../utils/localStorageFuncs'
+import { ITask } from '../types/models'
+import {
+  CalendarSvg,
+  DeleteSvg,
+  DotsSvg,
+  EditSvg,
+  ArrowDownSvg,
+} from '../assets/svg-data'
 
 type TaskProps = {
   task: ITask
 }
 
 const Card: FC<TaskProps> = ({ task }) => {
-  const { data: lists } = mainApi.useGetListsQuery()
+  const boardId = useAppSelector(state => state.app.boardId)
+  const { toggleModal, changeTaskState } = useAppActions()
+
+  const { data: lists } = mainApi.useGetListsByBoardQuery(
+    boardId !== 0 ? boardId : getIdFromLocalStorage('boardId', 0)
+  )
   const [deleteTask] = mainApi.useDeleteTaskMutation()
   const [updateTask] = mainApi.useUpdateTaskMutation()
 
-  const { toggleModal, changeTaskState } = useAppActions()
+  const [selectedList, setSelectedList] = useState(lists?.[0]?.name || '')
+
   const handleClickCard = () => {
     toggleModal({ taskId: task.id })
   }
@@ -29,8 +42,6 @@ const Card: FC<TaskProps> = ({ task }) => {
   const handleDeleteTask = () => {
     deleteTask(task.id)
   }
-
-  const [selectedList, setSelectedList] = useState(lists?.[0]?.name || '')
 
   const handleListSelection = (selectedItem: string) => {
     setSelectedList(selectedItem)

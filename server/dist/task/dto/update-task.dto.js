@@ -34,4 +34,8 @@ __decorate([
     (0, class_validator_1.IsDate)(),
     __metadata("design:type", Date)
 ], UpdateTaskDto.prototype, "dueDate", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], UpdateTaskDto.prototype, "boardId", void 0);
 //# sourceMappingURL=update-task.dto.js.map

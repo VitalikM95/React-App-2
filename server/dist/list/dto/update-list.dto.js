@@ -19,4 +19,8 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], UpdateListDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], UpdateListDto.prototype, "boardId", void 0);
 //# sourceMappingURL=update-list.dto.js.map

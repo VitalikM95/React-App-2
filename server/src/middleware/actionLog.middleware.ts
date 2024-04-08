@@ -9,7 +9,7 @@ export class ActionLogMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const { method, url, body } = req
     const action = this.getActionFromRequest(method, url)
-    if (method === 'GET') {
+    if (method === 'GET' || url.includes('/boards')) {
       return next()
     }
     try {

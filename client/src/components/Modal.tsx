@@ -1,18 +1,20 @@
+import { useEffect, useState } from 'react'
 import { useAppActions, useAppSelector } from '../redux/hooks'
-import { CloseSvg } from '../assets/svg-data'
+import { mainApi } from '../redux/main.api'
+
 import EditTask from './EditTask'
 import ShowTask from './ShowTask'
-import { mainApi } from '../redux/main.api'
-import { useEffect, useState } from 'react'
+
 import { HistoryMessage, formatHistoryForTask } from '../utils/historyFormatter'
 import { formatDateWithTime } from '../utils/dateHook'
+import { CloseSvg } from '../assets/svg-data'
 
-export const Modal = () => {
-  const isModalActive = useAppSelector(state => state.app.isModalActive)
-  const taskId = useAppSelector(state => state.app.taskId)
-  const taskState = useAppSelector(state => state.app.TaskState)
-  const { toggleModal } = useAppActions()
-  const { changeTaskState } = useAppActions()
+const Modal = () => {
+  const { isModalActive, TaskState, taskId } = useAppSelector(
+    state => state.app
+  )
+  const { changeTaskState, toggleModal } = useAppActions()
+
   const { data: history } = mainApi.useGetHistoryQuery()
   const [historyResult, setHistoryResult] = useState<HistoryMessage[]>([])
 
@@ -51,10 +53,10 @@ export const Modal = () => {
         </div>
         <div className='flex h-full'>
           <div className='w-full flex flex-col p-3 md:p-8 pt-5'>
-            {taskState === 'show' ? <ShowTask /> : <EditTask />}
+            {TaskState === 'show' ? <ShowTask /> : <EditTask />}
           </div>
           <div className='hide-history min-w-[40%] w-[40%] bg-main-light'>
-            {taskState !== 'create' && (
+            {TaskState !== 'create' && (
               <div className='flex flex-col gap-4 p-3 md:p-8'>
                 <h3 className='text-xl font-bold'>Activity</h3>
                 <div className='flex flex-col gap-4 h-screen pb-80 overflow-auto'>
@@ -82,3 +84,5 @@ export const Modal = () => {
     </div>
   )
 }
+
+export default Modal

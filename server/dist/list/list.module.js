@@ -10,15 +10,16 @@ exports.ListModule = void 0;
 const common_1 = require("@nestjs/common");
 const list_service_1 = require("./list.service");
 const list_controller_1 = require("./list.controller");
+const typeorm_1 = require("@nestjs/typeorm");
 const list_entity_1 = require("./entities/list.entity");
 const task_entity_1 = require("../task/entities/task.entity");
-const typeorm_1 = require("@nestjs/typeorm");
+const board_entity_1 = require("../board/entities/board.entity");
 let ListModule = class ListModule {
 };
 exports.ListModule = ListModule;
 exports.ListModule = ListModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([list_entity_1.List, task_entity_1.Task])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([list_entity_1.List, task_entity_1.Task, board_entity_1.Board])],
         controllers: [list_controller_1.ListController],
         providers: [list_service_1.ListService],
     })

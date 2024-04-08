@@ -1,3 +1,7 @@
+import { useAppActions, useAppSelector } from '../redux/hooks'
+import { mainApi } from '../redux/main.api'
+
+import { formatDate } from '../utils/dateHook'
 import {
   CalendarSvg,
   EditSvg,
@@ -5,13 +9,11 @@ import {
   PrioritySvg,
   StatusSvg,
 } from '../assets/svg-data'
-import { useAppActions, useAppSelector } from '../redux/hooks'
-import { mainApi } from '../redux/main.api'
-import { formatDate } from '../utils/dateHook'
 
 const ShowTask = () => {
-  const { changeTaskState } = useAppActions()
   const taskId = useAppSelector(state => state.app.taskId)
+  const { changeTaskState } = useAppActions()
+
   const { data: task, isLoading } = mainApi.useGetTaskQuery(taskId || 0)
 
   return isLoading ? (

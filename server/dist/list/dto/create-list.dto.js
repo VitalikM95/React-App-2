@@ -19,4 +19,8 @@ __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], CreateListDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", Number)
+], CreateListDto.prototype, "boardId", void 0);
 //# sourceMappingURL=create-list.dto.js.map

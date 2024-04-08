@@ -1,4 +1,4 @@
-import { IsDate, IsString } from 'class-validator'
+import { IsDate, IsNotEmpty, IsString } from 'class-validator'
 
 export class UpdateTaskDto {
   @IsString()
@@ -11,4 +11,6 @@ export class UpdateTaskDto {
   readonly status?: string
   @IsDate()
   readonly dueDate?: Date
+  @IsNotEmpty()
+  readonly boardId: number
 }

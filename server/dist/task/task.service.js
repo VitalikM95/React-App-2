@@ -23,20 +23,14 @@ let TaskService = class TaskService {
         this.taskRepo = taskRepo;
         this.listRepo = listRepo;
     }
-    findAll() {
-        return this.taskRepo.find({
-            relations: ['list'],
-        });
-    }
-    async findOne(id) {
-        if (id === 0) {
+    async findOne(taskId) {
+        if (taskId === 0) {
             return null;
         }
-        const options = {
-            where: { id },
+        const foundTask = await this.taskRepo.findOne({
+            where: { id: taskId },
             relations: ['list'],
-        };
-        const foundTask = await this.taskRepo.findOne(options);
+        });
         if (!foundTask) {
             throw new common_1.NotFoundException(`Task not found`);
         }
@@ -47,46 +41,33 @@ let TaskService = class TaskService {
             throw new common_1.BadRequestException('Name field cannot be empty');
         }
         const list = await this.listRepo.findOne({
-            where: { name: payload.status },
+            where: { name: payload.status, board: { id: payload.boardId } },
         });
         if (!list) {
-            const newList = this.listRepo.create({ name: payload.status });
-            await this.listRepo.save(newList);
-            const newData = { ...payload, list: newList };
-            const newTask = this.taskRepo.create(newData);
-            return this.taskRepo.save(newTask);
+            throw new common_1.NotFoundException('This list was not found');
         }
-        else {
-            const newTask = this.taskRepo.create({ ...payload, list });
-            return this.taskRepo.save(newTask);
-        }
+        const newTask = this.taskRepo.create({ ...payload, list });
+        return this.taskRepo.save(newTask);
     }
-    async update(id, changes) {
+    async update(taskId, changes) {
         const list = await this.listRepo.findOne({
-            where: { name: changes.status },
+            where: { name: changes.status, board: { id: changes.boardId } },
         });
         if (!list) {
-            const newList = this.listRepo.create({ name: changes.status });
-            await this.listRepo.save(newList);
-            const newData = { ...changes, list: newList };
-            await this.taskRepo.update(id, newData);
+            throw new common_1.NotFoundException('This list was not found');
         }
-        else {
-            const newData = { ...changes, list: list };
-            await this.taskRepo.update(id, newData);
-        }
-        const options = {
-            where: { id },
+        await this.taskRepo.update(taskId, { ...changes, list: list });
+        return this.taskRepo.findOne({
+            where: { id: taskId },
             relations: ['list'],
-        };
-        return this.taskRepo.findOne(options);
+        });
     }
-    async remove(id) {
-        const foundTask = await this.taskRepo.findOne({ where: { id } });
+    async remove(taskId) {
+        const foundTask = await this.taskRepo.findOne({ where: { id: taskId } });
         if (!foundTask) {
             throw new common_1.NotFoundException(`Task not found`);
         }
-        await this.taskRepo.delete(id);
+        await this.taskRepo.delete(taskId);
         return foundTask;
     }
 };

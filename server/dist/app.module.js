@@ -16,6 +16,7 @@ const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const actionLog_module_1 = require("./actionLog/actionLog.module");
 const actionLog_middleware_1 = require("./middleware/actionLog.middleware");
+const board_module_1 = require("./board/board.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -45,6 +46,7 @@ exports.AppModule = AppModule = __decorate([
             task_module_1.TaskModule,
             list_module_1.ListModule,
             actionLog_module_1.ActionLogModule,
+            board_module_1.BoardModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

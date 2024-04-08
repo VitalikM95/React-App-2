@@ -1,8 +1,17 @@
 export interface IAppState {
   isModalActive: boolean
   TaskState: 'show' | 'edit' | 'create'
+  boardId: number
   taskId: number | undefined
   listName: string | undefined
+}
+
+export interface IBoard {
+  id: number
+  createdAt: string
+  updatedAt: string
+  name: string
+  lists: IList[]
 }
 
 export interface IList {

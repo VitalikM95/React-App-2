@@ -1,11 +1,11 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   Param,
   Delete,
   Patch,
+  Get,
 } from '@nestjs/common'
 import { ListService } from './list.service'
 import { CreateListDto } from './dto/create-list.dto'
@@ -15,14 +15,9 @@ import { UpdateListDto } from './dto/update-list.dto'
 export class ListController {
   constructor(private readonly listService: ListService) {}
 
-  @Get()
-  findAll() {
-    return this.listService.findAll()
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.listService.findOne(+id)
+  @Get(':boardId')
+  getListsByBoard(@Param('boardId') boardId: number) {
+    return this.listService.getListsByBoard(+boardId)
   }
 
   @Post()
@@ -30,13 +25,13 @@ export class ListController {
     return this.listService.create(payload)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: number, @Body() payload: UpdateListDto) {
-    return this.listService.update(+id, payload)
+  @Patch(':listId')
+  update(@Param('listId') listId: number, @Body() payload: UpdateListDto) {
+    return this.listService.update(+listId, payload)
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.listService.remove(+id)
+  @Delete(':listId')
+  remove(@Param('listId') listId: number) {
+    return this.listService.remove(+listId)
   }
 }
